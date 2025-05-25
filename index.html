@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ネットワーク学習ゲーム - アルファ版</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <!-- メインメニュー画面 -->
+    <div id="menu-screen" class="screen active">
+        <div class="menu-container">
+            <h1 class="game-title">ネットワーク学習ゲーム</h1>
+            <div class="menu-buttons">
+                <button class="menu-btn" onclick="showScreen('stage-select')">ゲーム開始</button>
+                <button class="menu-btn" onclick="showScreen('settings')">設定</button>
+                <button class="menu-btn" onclick="showCredits()">クレジット</button>
+                <button class="menu-btn" onclick="exitGame()">終了</button>
+            </div>
+            <div class="version-info">アルファ版 v0.1</div>
+        </div>
+    </div>
+
+    <!-- ステージ選択画面 -->
+    <div id="stage-select-screen" class="screen">
+        <div class="stage-select-container">
+            <h2 class="screen-title">ステージ選択</h2>
+            <div class="stages-grid">
+                <div class="stage-card" id="stage-1" onclick="startStage(1)">
+                    <div class="stage-header">
+                        <h3>ステージ 1: ネットワーク基礎</h3>
+                        <div class="stage-status" id="status-1">▶ プレイ可能</div>
+                    </div>
+                    <p class="stage-description">パケット君がIPアドレスを使って<br>目的地に到達しよう！</p>
+                </div>
+                
+                <div class="stage-card" id="stage-2" onclick="startStage(2)">
+                    <div class="stage-header">
+                        <h3>ステージ 2: ルーターと経路</h3>
+                        <div class="stage-status" id="status-2">🔒 ロック中</div>
+                    </div>
+                    <p class="stage-description">郵便局（ルーター）を通って<br>効率的な道を見つけよう！</p>
+                </div>
+                
+                <div class="stage-card" id="stage-3" onclick="startStage(3)">
+                    <div class="stage-header">
+                        <h3>ステージ 3: IPアドレスとサブネット</h3>
+                        <div class="stage-status" id="status-3">🔒 ロック中</div>
+                    </div>
+                    <p class="stage-description">ネットワークを分割して<br>整理整頓しよう！</p>
+                </div>
+            </div>
+            <button class="back-btn" onclick="showScreen('menu')">メインメニューに戻る</button>
+        </div>
+    </div>
+
+    <!-- ゲームプレイ画面 -->
+    <div id="game-screen" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="hint-area">
+                    <div id="hint-text">ゲームを開始します...</div>
+                </div>
+                <div class="progress-area">
+                    <div class="progress-bar">
+                        <div id="progress-fill" class="progress-fill"></div>
+                        <span id="progress-text">進行度: 0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-area">
+                <canvas id="game-canvas" width="1000" height="500"></canvas>
+            </div>
+            
+            <div class="game-controls">
+                <button class="control-btn" onclick="showGameMenu()">メニュー</button>
+                <button class="control-btn" onclick="resetStage()">リセット</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- ステージクリア画面 -->
+    <div id="stage-clear-screen" class="screen">
+        <div class="clear-container">
+            <h1 class="clear-title" id="clear-title">🎉 ステージクリア！ 🎉</h1>
+            
+            <div class="learning-panel">
+                <h3>学習ポイント</h3>
+                <div id="learning-content" class="learning-content"></div>
+            </div>
+            
+            <div class="clear-buttons">
+                <button class="clear-btn" id="next-stage-btn" onclick="nextStage()" style="display: none;">次のステージへ</button>
+                <button class="clear-btn" onclick="replayStage()">もう一度プレイ</button>
+                <button class="clear-btn" onclick="showScreen('stage-select')">ステージ選択</button>
+                <button class="clear-btn" onclick="showScreen('menu')">メインメニュー</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 設定画面 -->
+    <div id="settings-screen" class="screen">
+        <div class="settings-container">
+            <h2 class="screen-title">設定</h2>
+            
+            <div class="settings-panel">
+                <div class="setting-group">
+                    <h3>音量設定</h3>
+                    <div class="volume-control">
+                        <label for="bgm-volume">BGM音量:</label>
+                        <input type="range" id="bgm-volume" min="0" max="100" value="50">
+                        <span id="bgm-value">50</span>
+                    </div>
+                    <div class="volume-control">
+                        <label for="effect-volume">効果音音量:</label>
+                        <input type="range" id="effect-volume" min="0" max="100" value="50">
+                        <span id="effect-value">50</span>
+                    </div>
+                </div>
+                
+                <div class="setting-group">
+                    <h3>操作方法</h3>
+                    <div class="controls-info">
+                        <p><strong>🖱️ マウス操作</strong></p>
+                        <ul>
+                            <li>クリック: オブジェクトの選択・実行</li>
+                            <li>ドラッグ: オブジェクトの移動（一部ステージ）</li>
+                        </ul>
+                        
+                        <p><strong>🎮 ゲーム操作</strong></p>
+                        <ul>
+                            <li>IPアドレスをクリックしてパケットに設定</li>
+                            <li>目的地をクリックしてパケットを移動</li>
+                            <li>ルーターをクリックして経路を選択</li>
+                        </ul>
+                        
+                        <p><strong>💡 ヒント</strong></p>
+                        <ul>
+                            <li>画面上部のヒントメッセージを参考にしてください</li>
+                            <li>進行度バーで現在の状況を確認できます</li>
+                            <li>困ったときはリセットボタンを使用してください</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            
+            <button class="back-btn" onclick="saveSettings(); showScreen('menu')">メインメニューに戻る</button>
+        </div>
+    </div>
+
+    <!-- ゲームメニューモーダル -->
+    <div id="game-menu-modal" class="modal">
+        <div class="modal-content">
+            <h3>ゲームメニュー</h3>
+            <div class="modal-buttons">
+                <button class="modal-btn" onclick="closeGameMenu(); showScreen('stage-select')">ステージ選択</button>
+                <button class="modal-btn" onclick="closeGameMenu(); showScreen('menu')">メインメニュー</button>
+                <button class="modal-btn" onclick="closeGameMenu()">キャンセル</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="packet.js"></script>
+    <script src="network-nodes.js"></script>
+    <script src="game.js"></script>
+    <script src="script.js"></script>
+</body>
+</html>
