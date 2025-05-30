@@ -26,10 +26,19 @@
         <div class="stage-select-container">
             <h2 class="screen-title">ステージ選択</h2>
             <div class="stages-grid">
+                <!-- チュートリアル -->
+                <div class="stage-card" id="stage-0" onclick="startStage(0)">
+                    <div class="stage-header">
+                        <h3>チュートリアル</h3>
+                        <div class="stage-status" id="status-0">▶ プレイ可能</div>
+                    </div>
+                    <p class="stage-description">ドラッグ&ドロップの操作方法を<br>覚えよう！</p>
+                </div>
+
                 <div class="stage-card" id="stage-1" onclick="startStage(1)">
                     <div class="stage-header">
                         <h3>ステージ 1: ネットワーク基礎</h3>
-                        <div class="stage-status" id="status-1">▶ プレイ可能</div>
+                        <div class="stage-status" id="status-1">🔒 ロック中</div>
                     </div>
                     <p class="stage-description">パケット君がIPアドレスを使って<br>目的地に到達しよう！</p>
                 </div>
@@ -54,6 +63,66 @@
         </div>
     </div>
 
+    <!-- チュートリアル画面 -->
+    <div id="tutorial-screen" class="screen">
+        <div class="game-container">
+            <div class="game-header">
+                <div class="stage-title">チュートリアル</div>
+                <div class="problem-number">操作方法を覚えよう</div>
+                <div class="hint-area">
+                    <div id="tutorial-hint">住所をドラッグして、パケット君に教えてあげよう！</div>
+                </div>
+                <div class="progress-area">
+                    <div class="progress-bar">
+                        <div id="tutorial-progress-fill" class="progress-fill"></div>
+                        <span id="tutorial-progress-text">進行度: 0%</span>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-area">
+                <div class="network-map tutorial-map">
+                    <!-- 郵便局 -->
+                    <div class="location-box option tutorial-post-office" id="tutorial-post-office" draggable="true" ondragstart="tutorialDragStart(event)">
+                        <div class="address">大阪府大阪市夢洲区未来町一丁目</div>
+                        <div class="building-name">郵便局</div>
+                    </div>
+
+                    <!-- 接続線 -->
+                    <div class="connection-lines">
+                        <div class="line tutorial-line"></div>
+                    </div>
+
+                    <!-- パケット君 -->
+                    <div class="packet-character tutorial-packet" id="tutorial-packet" ondrop="tutorialDrop(event)" ondragover="allowDrop(event)">
+                        <div class="character-body">🧑</div>
+                        <div class="packet-address" id="tutorial-packet-address">住所なし</div>
+                    </div>
+
+                    <!-- ナビゲーションメッセージ -->
+                    <div class="navigation-message" id="nav-message">
+                        <div class="nav-arrow" id="nav-arrow"></div>
+                        <div class="nav-text" id="nav-text">上の住所をドラッグしてください</div>
+                    </div>
+                </div>
+
+                <!-- 説明エリア -->
+                <div class="explanation-area">
+                    <div class="task-description">住所をパケット君にドラッグ&ドロップで教えよう</div>
+                    <div class="concept-explanation">
+                        <strong>ドラッグ&ドロップ</strong>とは、マウスでクリックしたまま移動させて、目的の場所で離す操作です。
+                        ネットワークでは、このように情報を正確に伝達することが重要です。
+                    </div>
+                </div>
+            </div>
+            
+            <div class="game-controls">
+                <button class="control-btn" onclick="skipTutorial()">スキップ</button>
+                <button class="control-btn" onclick="showScreen('stage-select')">ステージ選択に戻る</button>
+            </div>
+        </div>
+    </div>
+
     <!-- ゲームプレイ画面 -->
     <div id="game-screen" class="screen">
         <div class="game-container">
@@ -73,52 +142,48 @@
             
             <div class="game-area">
                 <div class="network-map">
-                    <!-- 郵便局（目的地） -->
+                    <!-- 郵便局（左上） -->
                     <div class="location-box option" id="post-office" draggable="true" ondragstart="dragStart(event)">
                         <div class="address">大阪府大阪市夢洲区未来町一丁目</div>
                         <div class="building-name">郵便局</div>
                     </div>
 
-                    <!-- 警察署 -->
-                    <div class="location-box option" id="police-station" draggable="true" ondragstart="dragStart(event)">
-                        <div class="address">大阪府大阪市夢洲区未来町二丁目</div>
-                        <div class="building-name">警察</div>
-                    </div>
-
-                    <!-- 病院 -->
-                    <div class="location-box option" id="hospital" draggable="true" ondragstart="dragStart(event)">
-                        <div class="address">大阪府大阪市夢洲区未来町三丁目</div>
-                        <div class="building-name">病院</div>
+                    <!-- 郵便局（右上） -->
+                    <div class="location-box option" id="post-office-2" draggable="true" ondragstart="dragStart(event)">
+                        <div class="address">沖縄県那覇市夢洲区未来町三丁目</div>
+                        <div class="building-name">郵便局</div>
                     </div>
 
                     <!-- 接続線 -->
                     <div class="connection-lines">
-                        <div class="line line-post-office"></div>
-                        <div class="line line-police"></div>
-                        <div class="line line-hospital"></div>
+                        <div class="line line-post-office-1"></div>
+                        <div class="line line-post-office-2"></div>
                     </div>
 
-                    <!-- 中央の選択ボックス -->
-                    <div class="selection-box" id="selection-box">
-                        <div class="selection-text">住所から郵便局を探す</div>
-                        <div class="selected-address" id="selected-address">ここに住所をドラッグ</div>
-                    </div>
-
-                    <!-- パケット君 -->
-                    <div class="packet-character" id="packet-kun" ondrop="drop(event)" ondragover="allowDrop(event)">
+                    <!-- パケット君（左下） - ドロップ可能 -->
+                    <div class="packet-character game-packet-left droppable" id="packet-kun-left" ondrop="drop(event)" ondragover="allowDrop(event)">
                         <div class="character-body">🧑</div>
-                        <div class="packet-address" id="packet-address">住所なし</div>
+                        <div class="packet-address" id="packet-address-left">住所なし</div>
+                    </div>
+
+                    <!-- パケット君（右下） - ドロップ不可 -->
+                    <div class="packet-character game-packet-right non-droppable" id="packet-kun-right">
+                        <div class="character-body">🧑</div>
+                        <div class="packet-address" id="packet-address-right">住所なし</div>
                     </div>
 
                     <!-- 送信ボタン -->
                     <button class="send-button" id="send-button" onclick="sendPacket()" disabled>
                         ping
                     </button>
+
+                    <!-- 注釈 -->
+                    <div class="game-note">一問目はここの接続だけ</div>
                 </div>
 
                 <!-- 説明エリア -->
                 <div class="explanation-area">
-                    <div class="task-description">3つの住所から郵便局（ゴール）の住所を見つける</div>
+                    <div class="task-description">左上の郵便局の住所を左下のパケット君に教えよう</div>
                     <div class="concept-explanation">
                         <strong>pingとは</strong>、ネットワーク上で相手のコンピュータに到達できるかを確認するコマンドです。
                         郵便で例えると、手紙が正しい住所に届くかを確認することと同じです。
