@@ -77,7 +77,7 @@ class NetworkGame {
                 packetPosition: { x: 400, y: 450 }
             }
         ];
-        
+
         this.currentProblemData = this.problems[this.currentProblem - 1];
     }
 
